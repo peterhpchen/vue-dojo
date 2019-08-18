@@ -8,7 +8,7 @@
     >
     <label for="source">Source Code</label>
     <div
-      v-if="!source"
+      v-show="!source"
       class="preview-container"
     />
     <MonacoEditor
@@ -83,7 +83,7 @@ return {
   },
   mounted() {
     this.$watch(
-      vm => [vm.compiledTemplate, vm.compiledScript, vm.compiledStyle],
+      vm => [vm.compiledTemplate, vm.compiledScript, vm.compiledStyle].join(),
       this.renderCode,
       { immediate: true },
     );
