@@ -12,9 +12,15 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@babel/standalone": "^7.5.5",
     "@vue/component-compiler-utils": "^3.0.0",
     "core-js": "^2.6.5",
+    "hash-sum": "^2.0.0",
+    "postcss": "^7.0.17",
+    "postcss-selector-parser": "^6.0.2",
+    "prettier": "1.18.2",
     "vue": "^2.6.10",
+    "vue-monaco": "^1.1.0",
     "vue-template-compiler": "^2.6.10",
     "vue-template-es2015-compiler": "^1.9.1"
   },
@@ -35,6 +41,7 @@
     "babel-jest": "^23.6.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "monaco-editor-webpack-plugin": "^1.7.0",
     "vue-cli-plugin-storybook": "^0.6.1"
   }
 }
