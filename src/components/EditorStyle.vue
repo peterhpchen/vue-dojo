@@ -8,6 +8,12 @@
         type="checkbox"
       >
       <label for="compiled">Compiled Code</label>
+      <input
+        id="cssModule"
+        v-model="cssModule"
+        type="checkbox"
+      >
+      <label for="cssModule">CSS Module</label>
     </div>
     <MonacoEditor
       v-if="!compiled"
@@ -29,6 +35,10 @@
 
 <script>
 import MonacoEditor from 'vue-monaco';
+
+import postcss from 'postcss';
+import postcssModules from 'postcss-modules';
+
 import Prettier from 'prettier/standalone';
 import ParserPostcss from 'prettier/parser-postcss';
 import ParserBabylon from 'prettier/parser-babylon';
@@ -40,13 +50,13 @@ export default {
   data() {
     return {
       compiled: false,
+      cssModule: false,
       code: '.dojo-title { color: #1982c4; }',
+      compiledCode: '',
+      moduleJson: '',
     };
   },
   computed: {
-    compiledCode() {
-      return this.code;
-    },
     compiledPreview() {
       try {
         let code = Prettier.format(this.compiledCode, {
@@ -55,6 +65,9 @@ export default {
         });
 
         code = `var __compiledStyle__ = \`${code ? `\n${code}` : ''}\`;`;
+        if (this.cssModule) {
+          code += `\nvar __$style__ = ${this.moduleJson}`;
+        }
 
         const result = Prettier.format(code, {
           singleQuote: true,
@@ -69,11 +82,37 @@ export default {
     },
   },
   watch: {
+    cssModule: {
+      handler() {
+        this.compileStyle();
+      },
+      immediate: true,
+    },
     compiledPreview: {
       handler(val) {
+        this.compileStyle();
         this.$emit('change-compiled', val);
       },
       immediate: true,
+    },
+  },
+  methods: {
+    compileStyle() {
+      if (!this.cssModule) {
+        this.compiledCode = this.code;
+        return;
+      }
+
+      const postcssPlugins = [];
+      postcssPlugins.push(postcssModules({
+        getJSON: (_cssFileName, json) => {
+          this.moduleJson = JSON.stringify(json);
+        },
+      }));
+
+      postcss(postcssPlugins).process(this.code).then((postcssResult) => {
+        this.compiledCode = postcssResult.css;
+      });
     },
   },
 };
