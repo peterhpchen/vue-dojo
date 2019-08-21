@@ -66,7 +66,7 @@ export default {
 
         code = `var __compiledStyle__ = \`${code ? `\n${code}` : ''}\`;`;
         if (this.cssModule) {
-          code += `\nvar __$style__ = ${this.moduleJson}`;
+          code += `\nvar __injectStyles__ = function () { this.$style = ${this.moduleJson}; }`;
         }
 
         const result = Prettier.format(code, {
@@ -105,8 +105,15 @@ export default {
 
       const postcssPlugins = [];
       postcssPlugins.push(postcssModules({
+        camelCase: true,
         getJSON: (_cssFileName, json) => {
-          this.moduleJson = JSON.stringify(json);
+          const camelCaseJson = Object.keys(json)
+            .filter(key => key.indexOf('-') <= 0)
+            .reduce(
+              (result, currentKey) => Object.assign(result, { [currentKey]: json[currentKey] }),
+              {},
+            );
+          this.moduleJson = JSON.stringify(camelCaseJson);
         },
       }));
 

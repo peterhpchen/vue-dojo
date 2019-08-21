@@ -59,10 +59,18 @@ ${this.compiledScript}\n
 ${this.compiledStyle}
 
 // render functions
-if (__render__) {
+if (typeof __render__ !== 'undefined' && __render__) {
   __componentOptions__.render = __render__;
   __componentOptions__.staticRenderFns = __staticRenderFns__;
   __componentOptions__._compiled = true;
+}
+
+// css module
+if (typeof __injectStyles__ !== 'undefined' && __injectStyles__) {
+  var existing = __componentOptions__.beforeCreate;
+  __componentOptions__.beforeCreate = existing
+    ? [].concat(existing, __injectStyles__)
+    : [__injectStyles__]
 }
 
 return {
