@@ -3,11 +3,11 @@
     <div class="editor-title">
       <h3>Script</h3>
       <input
-        id="compiled"
+        id="compiled-script"
         v-model="compiled"
         type="checkbox"
       >
-      <label for="compiled">Compiled Code</label>
+      <label for="compiled-script">Compiled Code</label>
     </div>
     <MonacoEditor
       v-if="!compiled"

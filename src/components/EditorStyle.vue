@@ -3,11 +3,11 @@
     <div class="editor-title">
       <h3>Style</h3>
       <input
-        id="compiled"
+        id="compiled-style"
         v-model="compiled"
         type="checkbox"
       >
-      <label for="compiled">Compiled Code</label>
+      <label for="compiled-style">Compiled Code</label>
       <input
         id="cssModule"
         v-model="cssModule"

@@ -3,11 +3,11 @@
     <div class="editor-title">
       <h3>Template</h3>
       <input
-        id="compiled"
+        id="compiled-template"
         v-model="compiled"
         type="checkbox"
       >
-      <label for="compiled">Compiled Code</label>
+      <label for="compiled-template">Compiled Code</label>
     </div>
     <MonacoEditor
       v-if="!compiled"
