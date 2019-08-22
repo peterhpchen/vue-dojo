@@ -73,6 +73,11 @@ if (typeof __injectStyles__ !== 'undefined' && __injectStyles__) {
     : [__injectStyles__]
 }
 
+// scoped css
+if (typeof __scopedId__ !== 'undefined' && __scopedId__) {
+  __componentOptions__._scopeId = __scopedId__;
+}
+
 return {
   options: __componentOptions__,
   style: __compiledStyle__,

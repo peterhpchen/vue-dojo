@@ -8,12 +8,29 @@
         type="checkbox"
       >
       <label for="compiled-style">Compiled Code</label>
-      <input
-        id="cssModule"
-        v-model="cssModule"
-        type="checkbox"
-      >
-      <label for="cssModule">CSS Module</label>
+      <div class="cssType">
+        <input
+          id="normal"
+          v-model="cssType"
+          value="normal"
+          type="radio"
+        >
+        <label for="normal">normal</label>
+        <input
+          id="cssModule"
+          v-model="cssType"
+          value="cssModule"
+          type="radio"
+        >
+        <label for="cssModule">CSS Module</label>
+        <input
+          id="scopedCss"
+          v-model="cssType"
+          value="scopedCss"
+          type="radio"
+        >
+        <label for="scopedCss">Scoped CSS</label>
+      </div>
     </div>
     <MonacoEditor
       v-if="!compiled"
@@ -43,6 +60,12 @@ import Prettier from 'prettier/standalone';
 import ParserPostcss from 'prettier/parser-postcss';
 import ParserBabylon from 'prettier/parser-babylon';
 
+import hash from 'hash-sum';
+
+
+import scopedPlugins from '@/compilers/stylePlugins/scoped';
+
+
 export default {
   components: {
     MonacoEditor,
@@ -50,13 +73,23 @@ export default {
   data() {
     return {
       compiled: false,
-      cssModule: false,
       code: '.dojo-title { color: #1982c4; }',
       compiledCode: '',
       moduleJson: '',
+      cssType: 'normal',
+      scopedId: `data-v-${hash('vue-dojo')}`,
     };
   },
   computed: {
+    cssModule() {
+      return this.cssType === 'cssModule';
+    },
+    scopedCss() {
+      return this.cssType === 'scopedCss';
+    },
+    normal() {
+      return this.cssType === 'normal';
+    },
     compiledPreview() {
       try {
         let code = Prettier.format(this.compiledCode, {
@@ -67,6 +100,9 @@ export default {
         code = `var __compiledStyle__ = \`${code ? `\n${code}` : ''}\`;`;
         if (this.cssModule) {
           code += `\nvar __injectStyles__ = function () { this.$style = ${this.moduleJson}; }`;
+        }
+        if (this.scopedCss) {
+          code += `\nvar __scopedId__ = '${this.scopedId}'`;
         }
 
         const result = Prettier.format(code, {
@@ -98,28 +134,37 @@ export default {
   },
   methods: {
     compileStyle() {
-      if (!this.cssModule) {
+      if (this.normal) {
         this.compiledCode = this.code;
         return;
       }
 
       const postcssPlugins = [];
-      postcssPlugins.push(postcssModules({
-        camelCase: true,
-        getJSON: (_cssFileName, json) => {
-          const camelCaseJson = Object.keys(json)
-            .filter(key => key.indexOf('-') <= 0)
-            .reduce(
-              (result, currentKey) => Object.assign(result, { [currentKey]: json[currentKey] }),
-              {},
-            );
-          this.moduleJson = JSON.stringify(camelCaseJson);
-        },
-      }));
 
-      postcss(postcssPlugins).process(this.code).then((postcssResult) => {
-        this.compiledCode = postcssResult.css;
-      });
+      if (this.cssModule) {
+        postcssPlugins.push(postcssModules({
+          camelCase: true,
+          getJSON: (_cssFileName, json) => {
+            const camelCaseJson = Object.keys(json)
+              .filter(key => key.indexOf('-') <= 0)
+              .reduce(
+                (result, currentKey) => Object.assign(result, { [currentKey]: json[currentKey] }),
+                {},
+              );
+            this.moduleJson = JSON.stringify(camelCaseJson);
+          },
+        }));
+
+        postcss(postcssPlugins).process(this.code).then((postcssResult) => {
+          this.compiledCode = postcssResult.css;
+        });
+        return;
+      }
+
+      if (this.scopedCss) {
+        postcssPlugins.push(scopedPlugins(this.scopedId));
+        this.compiledCode = postcss(postcssPlugins).process(this.code).css;
+      }
     },
   },
 };
