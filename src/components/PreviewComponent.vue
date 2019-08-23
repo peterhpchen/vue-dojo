@@ -10,7 +10,12 @@
     <div
       v-show="!source"
       class="preview-container"
-    />
+    >
+      <component
+        :is="componentOptions"
+        v-if="componentOptions.render"
+      />
+    </div>
     <MonacoEditor
       v-if="source"
       :value="compiledCode"
@@ -24,7 +29,6 @@
 import MonacoEditor from 'vue-monaco';
 import Prettier from 'prettier/standalone';
 import ParserBabylon from 'prettier/parser-babylon';
-import Vue from 'vue';
 
 export default {
   components: {
@@ -47,8 +51,8 @@ export default {
   data() {
     return {
       source: false,
-      codeVM: null,
       styleEl: null,
+      componentOptions: {},
     };
   },
   computed: {
@@ -65,12 +69,26 @@ if (typeof __render__ !== 'undefined' && __render__) {
   __componentOptions__._compiled = true;
 }
 
+// functional template
+if (typeof __functionalTemplate__ !== 'undefined' && __functionalTemplate__) {
+  __componentOptions__.functional = true;
+}
+
 // css module
 if (typeof __injectStyles__ !== 'undefined' && __injectStyles__) {
-  var existing = __componentOptions__.beforeCreate;
-  __componentOptions__.beforeCreate = existing
-    ? [].concat(existing, __injectStyles__)
-    : [__injectStyles__]
+  if (__componentOptions__.functional) {
+    var originalRender = __componentOptions__.render;
+    __componentOptions__.render = function renderWithStyleInjection (h, context) {
+      debugger;
+      __injectStyles__.call(context)
+      return originalRender(h, context)
+    }
+  } else {
+    var existing = __componentOptions__.beforeCreate;
+    __componentOptions__.beforeCreate = existing
+      ? [].concat(existing, __injectStyles__)
+      : [__injectStyles__]
+  }
 }
 
 // scoped css
@@ -103,30 +121,16 @@ return {
   },
   methods: {
     renderCode() {
-      const previewContainer = this.$el.getElementsByClassName('preview-container')[0];
-
-      // Remove previous render element
-      if (this.codeVM) {
-        this.codeVM.$destroy();
-        previewContainer.removeChild(previewContainer.firstChild);
-        this.codeVM = null;
-
-        if (this.styleEl) {
-          document.head.removeChild(this.styleEl);
-          this.styleEl = null;
-        }
+      if (this.styleEl) {
+        document.head.removeChild(this.styleEl);
+        this.styleEl = null;
       }
-
-      // Create render element
-      const codeEl = document.createElement('div');
-      previewContainer.appendChild(codeEl);
 
       const normalizer = new Function(this.compiledCode); // eslint-disable-line
 
       const { options, style } = normalizer();
 
-      // Create Vue instance
-      this.codeVM = new Vue({ ...options }).$mount(codeEl);
+      this.componentOptions = options;
 
       // Add style to head
       this.styleEl = document.createElement('style');

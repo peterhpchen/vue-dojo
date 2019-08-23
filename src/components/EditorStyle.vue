@@ -99,7 +99,7 @@ export default {
 
         code = `var __compiledStyle__ = \`${code ? `\n${code}` : ''}\`;`;
         if (this.cssModule) {
-          code += `\nvar __injectStyles__ = function () { this.$style = ${this.moduleJson}; }`;
+          code += `\nvar __injectStyles__ = function (context) { this.$style = ${this.moduleJson}; }`;
         }
         if (this.scopedCss) {
           code += `\nvar __scopedId__ = '${this.scopedId}'`;

@@ -8,6 +8,12 @@
         type="checkbox"
       >
       <label for="compiled-template">Compiled Code</label>
+      <input
+        id="functional"
+        v-model="functional"
+        type="checkbox"
+      >
+      <label for="functional">Functional</label>
     </div>
     <MonacoEditor
       v-if="!compiled"
@@ -42,6 +48,7 @@ export default {
     return {
       compiled: false,
       code: '<div><h3 class="dojo-title">hello {{title}}</h3></div>',
+      functional: false,
     };
   },
   computed: {
@@ -58,10 +65,16 @@ export default {
           + 'var __staticRenderFns__ = [];\n';
       }
 
-      const code = VueTemplateES2015Compiler(
-        `var __render__ = function () {${render}};`
-        + `var __staticRenderFns__ = [${staticRenderFns.map(fn => `function () {${fn}}`)}];`,
+      let code = VueTemplateES2015Compiler(
+        `var __render__ = function (${this.functional ? '_h,_vm' : ''}) {${render}};`
+        + `var __staticRenderFns__ = [${staticRenderFns.map(fn => `function (${this.functional ? '_h,_vm' : ''}) {${fn}}`)}];`,
+        { transforms: { stripWithFunctional: this.functional } },
       );
+
+      if (this.functional) {
+        code += 'var __functionalTemplate__ = true;';
+      }
+
       const result = Prettier.format(code, {
         singleQuote: true,
         parser: 'babel',
