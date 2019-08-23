@@ -29,7 +29,9 @@
 
 <script>
 import MonacoEditor from 'vue-monaco';
+
 import * as Babel from '@babel/standalone';
+import vueBabelPresetJsx from '@vue/babel-preset-jsx';
 
 export default {
   components: {
@@ -49,7 +51,13 @@ export default {
     },
     compiledPreview() {
       try {
-        const result = Babel.transform(this.compiledCode, { presets: ['es2015'] }).code;
+        Babel.registerPreset('@vue/babel-preset-jsx', vueBabelPresetJsx);
+        const result = Babel.transform(this.compiledCode, {
+          presets: [
+            '@vue/babel-preset-jsx',
+            'es2015',
+          ],
+        }).code;
         return result;
       } catch {
         return 'var __componentOptions__ = {};';
