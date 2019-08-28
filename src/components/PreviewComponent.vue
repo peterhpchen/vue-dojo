@@ -79,7 +79,6 @@ if (typeof __injectStyles__ !== 'undefined' && __injectStyles__) {
   if (__componentOptions__.functional) {
     var originalRender = __componentOptions__.render;
     __componentOptions__.render = function renderWithStyleInjection (h, context) {
-      debugger;
       __injectStyles__.call(context)
       return originalRender(h, context)
     }
