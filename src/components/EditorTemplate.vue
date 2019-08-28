@@ -14,9 +14,6 @@
         type="checkbox"
       >
       <label for="functional">Functional</label>
-      <button @click="tidy">
-        Tidy
-      </button>
     </div>
     <MonacoEditor
       v-if="!compiled"
@@ -42,7 +39,6 @@ import * as VueTemplateCompiler from 'vue-template-compiler';
 import * as VueTemplateES2015Compiler from 'vue-template-es2015-compiler';
 import Prettier from 'prettier/standalone';
 import ParserBabylon from 'prettier/parser-babylon';
-import ParserHtml from 'prettier/parser-html';
 
 export default {
   components: {
@@ -94,14 +90,6 @@ export default {
         this.$emit('change-compiled', val);
       },
       immediate: true,
-    },
-  },
-  methods: {
-    tidy() {
-      this.code = Prettier.format(this.code, {
-        parser: 'html',
-        plugins: [ParserHtml],
-      });
     },
   },
 };
