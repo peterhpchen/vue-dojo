@@ -8,6 +8,9 @@
         type="checkbox"
       >
       <label for="compiled-script">Compiled Code</label>
+      <button @click="tidy">
+        Tidy
+      </button>
     </div>
     <MonacoEditor
       v-if="!compiled"
@@ -32,6 +35,9 @@ import MonacoEditor from 'vue-monaco';
 
 import * as Babel from '@babel/standalone';
 import vueBabelPresetJsx from '@vue/babel-preset-jsx';
+
+import Prettier from 'prettier/standalone';
+import ParserBabylon from 'prettier/parser-babylon';
 
 export default {
   components: {
@@ -70,6 +76,15 @@ export default {
         this.$emit('change-compiled', val);
       },
       immediate: true,
+    },
+  },
+  methods: {
+    tidy() {
+      this.code = Prettier.format(this.code, {
+        singleQuote: true,
+        parser: 'babel',
+        plugins: [ParserBabylon],
+      });
     },
   },
 };
