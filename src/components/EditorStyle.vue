@@ -31,6 +31,9 @@
         >
         <label for="scopedCss">Scoped CSS</label>
       </div>
+      <button @click="tidy">
+        Tidy
+      </button>
     </div>
     <MonacoEditor
       v-if="!compiled"
@@ -165,6 +168,12 @@ export default {
         postcssPlugins.push(scopedPlugins(this.scopedId));
         this.compiledCode = postcss(postcssPlugins).process(this.code).css;
       }
+    },
+    tidy() {
+      this.code = Prettier.format(this.code, {
+        parser: 'css',
+        plugins: [ParserPostcss],
+      });
     },
   },
 };
