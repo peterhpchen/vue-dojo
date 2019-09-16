@@ -1,7 +1,7 @@
 <template>
-  <div class="editor-container">
-    <div class="editor-title">
-      <h3>Script</h3>
+  <div class="vdj-editor">
+    <div class="vdj-editor__func-bar">
+      <span>Script</span>
       <input
         id="compiled-script"
         v-model="compiled"
@@ -18,13 +18,14 @@
       v-model="code"
       class="editor"
       language="javascript"
+      :options="{automaticLayout: true}"
     />
     <MonacoEditor
       v-else
       key="compiled"
       :value="compiledPreview"
       class="editor"
-      :options="{readOnly: true}"
+      :options="{readOnly: true, automaticLayout: true}"
       language="javascript"
     />
   </div>
@@ -90,6 +91,13 @@ export default {
 };
 </script>
 
-<style>
-
+<style scoped>
+.vdj-editor__func-bar {
+  padding: 10px;
+  height: 35px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.editor {
+  height: calc(100% - 55px);
+}
 </style>

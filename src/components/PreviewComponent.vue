@@ -1,19 +1,26 @@
 <template>
   <div>
-    <h3>Preview</h3>
-    <input
-      id="source"
-      v-model="source"
-      type="checkbox"
-    >
-    <label for="source">Source Code</label>
+    <div class="vdj-editor__func-bar">
+      <span>Preview</span>
+      <input
+        id="source"
+        v-model="source"
+        type="checkbox"
+      >
+      <label for="source">Source Code</label>
+    </div>
     <div
       v-show="!source"
       class="preview-container"
     >
+      <DataField
+        v-model="componentProps"
+        :prop-define="componentPropsDefine"
+      />
       <component
         :is="componentOptions"
         v-if="componentOptions.render"
+        v-bind="componentProps"
       />
     </div>
     <MonacoEditor
@@ -21,18 +28,23 @@
       :value="compiledCode"
       class="editor"
       language="javascript"
+      :options="{readOnly: true, automaticLayout: true}"
     />
   </div>
 </template>
 
 <script>
 import MonacoEditor from 'vue-monaco';
+
 import Prettier from 'prettier/standalone';
 import ParserBabylon from 'prettier/parser-babylon';
+
+import DataField from './DataField.vue';
 
 export default {
   components: {
     MonacoEditor,
+    DataField,
   },
   props: {
     compiledTemplate: {
@@ -53,6 +65,9 @@ export default {
       source: false,
       styleEl: null,
       componentOptions: {},
+      componentPropsDefine: {},
+      componentProps: {},
+      test: { hello: 'hihi' },
     };
   },
   computed: {
@@ -130,6 +145,7 @@ return {
       const { options, style } = normalizer();
 
       this.componentOptions = options;
+      this.componentPropsDefine = options.props;
 
       // Add style to head
       this.styleEl = document.createElement('style');
@@ -140,6 +156,13 @@ return {
 };
 </script>
 
-<style>
-
+<style scoped>
+.vdj-editor__func-bar {
+  padding: 10px;
+  height: 35px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.editor {
+  height: calc(100% - 55px);
+}
 </style>

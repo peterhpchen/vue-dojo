@@ -1,36 +1,34 @@
 <template>
-  <div class="editor-container">
-    <div class="editor-title">
-      <h3>Style</h3>
+  <div class="vdj-editor">
+    <div class="vdj-editor__func-bar">
+      <span>Style</span>
       <input
         id="compiled-style"
         v-model="compiled"
         type="checkbox"
       >
       <label for="compiled-style">Compiled Code</label>
-      <div class="cssType">
-        <input
-          id="normal"
-          v-model="cssType"
-          value="normal"
-          type="radio"
-        >
-        <label for="normal">normal</label>
-        <input
-          id="cssModule"
-          v-model="cssType"
-          value="cssModule"
-          type="radio"
-        >
-        <label for="cssModule">CSS Module</label>
-        <input
-          id="scopedCss"
-          v-model="cssType"
-          value="scopedCss"
-          type="radio"
-        >
-        <label for="scopedCss">Scoped CSS</label>
-      </div>
+      <input
+        id="normal"
+        v-model="cssType"
+        value="normal"
+        type="radio"
+      >
+      <label for="normal">normal</label>
+      <input
+        id="cssModule"
+        v-model="cssType"
+        value="cssModule"
+        type="radio"
+      >
+      <label for="cssModule">CSS Module</label>
+      <input
+        id="scopedCss"
+        v-model="cssType"
+        value="scopedCss"
+        type="radio"
+      >
+      <label for="scopedCss">Scoped CSS</label>
       <button @click="tidy">
         Tidy
       </button>
@@ -41,13 +39,14 @@
       v-model="code"
       class="editor"
       language="css"
+      :options="{automaticLayout: true}"
     />
     <MonacoEditor
       v-else
       key="compiled"
       :value="compiledPreview"
       class="editor"
-      :options="{readOnly: true}"
+      :options="{readOnly: true, automaticLayout: true}"
       language="javascript"
     />
   </div>
@@ -179,6 +178,22 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.vdj-editor__func-bar {
+  padding: 10px;
+  height: 35px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.editor {
+  height: calc(100% - 55px);
+}
+/* .editor {
+  width: 600px;
+  height: 100%;
+}
 
+.editor-container{
+  display: flex;
+  flex-direction: column;
+} */
 </style>

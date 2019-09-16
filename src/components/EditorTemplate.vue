@@ -1,7 +1,7 @@
 <template>
-  <div class="editor-container">
-    <div class="editor-title">
-      <h3>Template</h3>
+  <div class="vdj-editor">
+    <div class="vdj-editor__func-bar">
+      <span>Template</span>
       <input
         id="compiled-template"
         v-model="compiled"
@@ -24,13 +24,14 @@
       v-model="code"
       class="editor"
       language="html"
+      :options="{automaticLayout: true}"
     />
     <MonacoEditor
       v-else
       key="compiled"
       :value="compiledPreview"
       class="editor"
-      :options="{readOnly: true}"
+      :options="{readOnly: true, automaticLayout: true}"
       language="javascript"
     />
   </div>
@@ -107,15 +108,13 @@ export default {
 };
 </script>
 
-<style>
-
-.editor {
-  width: 600px;
-  height: 100%;
+<style scoped>
+.vdj-editor__func-bar {
+  padding: 10px;
+  height: 35px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
-
-.editor-container{
-  display: flex;
-  flex-direction: column;
+.editor {
+  height: calc(100% - 55px);
 }
 </style>
