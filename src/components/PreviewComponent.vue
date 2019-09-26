@@ -39,6 +39,7 @@ import MonacoEditor from 'vue-monaco';
 import Prettier from 'prettier/standalone';
 import ParserBabylon from 'prettier/parser-babylon';
 
+import debounce from 'lodash/debounce';
 import DataField from './DataField.vue';
 
 export default {
@@ -129,7 +130,7 @@ return {
   mounted() {
     this.$watch(
       vm => [vm.compiledTemplate, vm.compiledScript, vm.compiledStyle].join(),
-      this.renderCode,
+      debounce(this.renderCode, 500),
       { immediate: true },
     );
   },
